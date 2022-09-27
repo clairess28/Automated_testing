@@ -1,0 +1,28 @@
+// @ts-check
+const { test, expect } = require('@playwright/test');
+
+test('Check the possibility to reset password', async ({ page }) => {
+  await page.goto('https://www.example.com');
+
+// Click "Login" button
+  await page.locator('button:has-text("Login")').click();
+
+// Click 'Forgot password'
+  await page.locator('text=Forgot password?').click();
+
+// Check that email field is empty and the button Reset password is inactive
+  const locator = page.locator('.login-form.reset [placeholder="Email"]');
+  await expect(locator).toBeEmpty();
+  const locator2 = page.locator('button:has-text("Reset my password")');
+  await expect(locator2).toBeDisabled();
+
+// Fill email field, check that the button Reset password becomes active and click this button
+  let email = 'test2@gmail.com';
+  await locator.fill(email);
+  await expect(locator2).toBeEnabled();
+  await locator2.click();
+
+// Check that text contains information about our email
+  await expect(page.locator(`text=${email}`)).toHaveText(email);
+  
+});
